@@ -1,10 +1,9 @@
 plugins {
+    java
     kotlin("jvm") version "1.9.0"
     kotlin("plugin.serialization") version "1.9.0"
 
     `maven-publish`
-
-    `java-library`
 }
 
 group = "dev.llelievr"
@@ -23,7 +22,29 @@ dependencies {
     testImplementation("com.fazecast:jSerialComm:2.10.2")
 }
 
-tasks.named<Test>("test") {
-    useJUnitPlatform()
+//tasks.named<Test>("test") {
+//    useJUnitPlatform()
+//}
+
+kotlin {
+    jvmToolchain {
+        languageVersion.set(JavaLanguageVersion.of(17))
+    }
+}
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(17))
+    }
 }
 
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            groupId = "dev.llelievr"
+            artifactId = "espflashkotlin"
+            version = "1.0.0"
+
+            from(components["java"])
+        }
+    }
+}
