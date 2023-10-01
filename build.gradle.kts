@@ -26,14 +26,12 @@ dependencies {
 //    useJUnitPlatform()
 //}
 
-kotlin {
-    jvmToolchain {
-        languageVersion.set(JavaLanguageVersion.of(17))
+tasks {
+    compileKotlin {
+        kotlinOptions.jvmTarget = "17"
     }
-}
-java {
-    toolchain {
-        languageVersion.set(JavaLanguageVersion.of(17))
+    compileTestKotlin {
+        kotlinOptions.jvmTarget = "17"
     }
 }
 
