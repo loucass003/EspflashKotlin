@@ -132,6 +132,9 @@ class Flasher(
 
         begin();
 
+        if (binsToFlash.isEmpty())
+            error("No binary added to the flasher")
+
         binsToFlash.sortedBy { it.first }.forEach { pair ->
             writeBinToFlash(pair.second, pair.first);
         }
