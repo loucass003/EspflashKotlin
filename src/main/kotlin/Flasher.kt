@@ -240,16 +240,6 @@ class Flasher(
         return true;
     }
 
-//    fun padTo(data: ByteArray, alignment: Int, padCharacter: Byte = 0xFF.toByte()): ByteArray {
-//        var paddedData = data
-//        val padMod = data.size % alignment
-//        if (padMod != 0) {
-//            val padding = ByteArray(alignment - padMod) { padCharacter }
-//            paddedData += padding
-//        }
-//        return paddedData
-//    }
-
     private fun writeBinToFlash(bin: ByteArray, offset: Int) {
         val flasherTarget = currentTarget ?: error("target not set")
         val writeSize = flasherTarget.getFlashWriteSize()
