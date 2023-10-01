@@ -113,28 +113,6 @@ data class ResponsePacket(
     val value: Int,
     val optionalData: ByteArray?
 ) {
-//    var direction: Direction = Direction.RESPONSE;
-//    var command: Command? = null;
-//    var value: Int = 0;
-//    var optionalData: ByteArray? = null;
-
-//    fun decodeHeader(data: ByteBuffer) {
-//        val size = data.array().size;
-//
-////        direction = Direction.getByValue(data.get()) ?: error("unable to decode direction")
-//        if (direction != Direction.RESPONSE) {
-//            error("Received response packet with direction not set to response")
-//        }
-//        command = Command.getByValue(data.get()) ?: error("unable to decode command")
-//        data.getShort(); // SKIP SIZE as it is unreliable at best. we can compute size from the packet size itself
-//        value = data.getInt();
-//
-//        if (size  > STATUS_BYTES_LENGTH) {
-//            optionalData = data.array().slice(8..< size - STATUS_BYTES_LENGTH).toByteArray()
-//        }
-//
-//    }
-
     fun optionalData(): ByteArray? {
         return optionalData;
     }
