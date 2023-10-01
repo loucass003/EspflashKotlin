@@ -7,16 +7,16 @@ class SLIPParser(
 ) {
     private var slipReader: Iterator<ByteArray>? = null;
 
-    public fun flushInput() {
+    fun flushInput() {
         serialInterface.flushIOBuffers();
         slipReader = slipReaderGenerator();
     }
 
-    public fun getSlipReader(): Iterator<ByteArray>? {
+    fun getSlipReader(): Iterator<ByteArray>? {
         return slipReader;
     }
 
-    fun slipReaderGenerator() = iterator<ByteArray> {
+    private fun slipReaderGenerator() = iterator<ByteArray> {
         val partialPacket = ByteArrayOutputStream();
         var packetStarted = false;
         var inEscape = false;

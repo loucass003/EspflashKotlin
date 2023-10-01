@@ -1,12 +1,11 @@
 import com.fazecast.jSerialComm.SerialPort
-import org.junit.jupiter.api.Test
 import java.io.File
 
-class LibraryTest(): FlasherSerialInterface {
+class LibraryTest: FlasherSerialInterface {
 
     private var port: SerialPort? = null
 
-    @Test fun flash() {
+    fun flash() {
         Flasher(this, false)
             .addBin(File("C:\\Users\\louca\\Documents\\SlimeVR\\SlimeVR-Tracker-ESP\\.pio\\build\\esp32\\bootloader.bin").readBytes(), 4096)
             .addBin(File("C:\\Users\\louca\\Documents\\SlimeVR\\SlimeVR-Tracker-ESP\\.pio\\build\\esp32\\partitions.bin").readBytes(), 32768)
@@ -82,4 +81,8 @@ class LibraryTest(): FlasherSerialInterface {
         val p = port ?: error("no port to flush");
         p.flushIOBuffers()
     }
+}
+
+fun main() {
+    LibraryTest().flash()
 }

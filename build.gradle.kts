@@ -22,9 +22,9 @@ dependencies {
     testImplementation("com.fazecast:jSerialComm:2.10.2")
 }
 
-//tasks.named<Test>("test") {
-//    useJUnitPlatform()
-//}
+tasks.named<Test>("test") {
+    useJUnitPlatform()
+}
 
 tasks {
     compileKotlin {
