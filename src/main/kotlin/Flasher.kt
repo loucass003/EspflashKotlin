@@ -240,6 +240,16 @@ class Flasher(
         return true;
     }
 
+//    fun padTo(data: ByteArray, alignment: Int, padCharacter: Byte = 0xFF.toByte()): ByteArray {
+//        var paddedData = data
+//        val padMod = data.size % alignment
+//        if (padMod != 0) {
+//            val padding = ByteArray(alignment - padMod) { padCharacter }
+//            paddedData += padding
+//        }
+//        return paddedData
+//    }
+
     private fun writeBinToFlash(bin: ByteArray, offset: Int) {
         val flasherTarget = currentTarget ?: error("target not set")
         val writeSize = flasherTarget.getFlashWriteSize()
@@ -252,11 +262,18 @@ class Flasher(
         chunks.forEachIndexed { index, chunk ->
             println("Progress ${(index.toFloat() / chunks.count()) * 100}")
 
+            var block = chunk.toByteArray();
+
+            // Pad the last block
+            if (block.size < writeSize) {
+                block += ByteArray(writeSize - block.size) { 0xff.toByte() }
+            }
+
             writeWait(
                 FlashData(
-                    chunk.size,
+                    block.size,
                     index,
-                    chunk.toByteArray()
+                    block
                 ),
             )
         }
@@ -288,7 +305,7 @@ class Flasher(
             }
 
             if (md5Str != binMd5)
-                error("MD5 of file does not match data in flash!")
+                error("MD5 of file does not match data in flash!, local = $binMd5, mcu = $md5Str")
         }
     }
 
