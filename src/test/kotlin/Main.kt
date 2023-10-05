@@ -1,6 +1,7 @@
-package dev.llelievr.espflashkotlin
 
 import com.fazecast.jSerialComm.SerialPort
+import dev.llelievr.espflashkotlin.Flasher
+import dev.llelievr.espflashkotlin.FlasherSerialInterface
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.IOException

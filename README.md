@@ -12,6 +12,8 @@ Here is a list of the known serial libraries that are supported:
 
 ## Example use case
 ```kotlin
+import dev.llelievr.espflashkotlin.Flasher
+import dev.llelievr.espflashkotlin.FlasherSerialInterface
 import com.fazecast.jSerialComm.SerialPort
 import java.io.File
 
