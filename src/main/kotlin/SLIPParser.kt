@@ -1,3 +1,6 @@
+package dev.llelievr.espflashkotlin
+
+
 import java.io.ByteArrayOutputStream
 
 @OptIn(ExperimentalStdlibApi::class)

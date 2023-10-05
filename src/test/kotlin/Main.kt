@@ -1,5 +1,11 @@
+package dev.llelievr.espflashkotlin
+
 import com.fazecast.jSerialComm.SerialPort
+import java.io.ByteArrayOutputStream
 import java.io.File
+import java.io.IOException
+import java.io.InputStream
+import java.net.URL
 
 class LibraryTest: FlasherSerialInterface {
 
@@ -7,11 +13,29 @@ class LibraryTest: FlasherSerialInterface {
 
     fun flash() {
         Flasher(this, false)
-            .addBin(File("C:\\Users\\louca\\Documents\\SlimeVR\\SlimeVR-Tracker-ESP\\.pio\\build\\esp32\\bootloader.bin").readBytes(), 4096)
-            .addBin(File("C:\\Users\\louca\\Documents\\SlimeVR\\SlimeVR-Tracker-ESP\\.pio\\build\\esp32\\partitions.bin").readBytes(), 32768)
-            .addBin(File("C:\\Users\\louca\\.platformio\\packages\\framework-arduinoespressif32@3.20007.0\\tools\\partitions\\boot_app0.bin").readBytes(), 57344)
-            .addBin(File("C:\\Users\\louca\\Documents\\SlimeVR\\SlimeVR-Tracker-ESP\\.pio\\build\\esp32\\firmware.bin").readBytes(), 65536)
+            .addBin(File("C:\\Users\\louca\\Documents\\SlimeVR\\SlimeVR-Tracker-ESP\\.pio\\build\\esp32c3\\bootloader.bin").readBytes(), 0x0000)
+            .addBin(File("C:\\Users\\louca\\Documents\\SlimeVR\\SlimeVR-Tracker-ESP\\.pio\\build\\esp32c3\\partitions.bin").readBytes(), 0x8000)
+            .addBin(File("C:\\Users\\louca\\.platformio\\packages\\framework-arduinoespressif32@3.20007.0\\tools\\partitions\\boot_app0.bin").readBytes(), 0xe000)
+            .addBin(File("C:\\Users\\louca\\Documents\\SlimeVR\\SlimeVR-Tracker-ESP\\.pio\\build\\esp32c3\\firmware.bin").readBytes(), 0x10000)
+//            .addBin(downloadFirmware("http://127.0.0.1:9099/slimevr-firmware-builds/7e3c6081-0adb-4b12-9382-69c6174dcbd0/firmware-part-0.bin") ?: error("unable to download"), 0)
             .flash()
+    }
+
+    fun downloadFirmware(url: String): ByteArray? {
+        val outputStream = ByteArrayOutputStream()
+
+        try {
+            val chunk = ByteArray(4096)
+            var bytesRead: Int
+            val stream: InputStream = URL(url).openStream()
+            while (stream.read(chunk).also { bytesRead = it } > 0) {
+                outputStream.write(chunk, 0, bytesRead)
+            }
+        } catch (e: IOException) {
+            error("Cant download firmware $url")
+        }
+
+        return outputStream.toByteArray()
     }
 
     override fun openSerial() {

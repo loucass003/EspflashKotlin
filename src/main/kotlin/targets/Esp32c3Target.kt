@@ -1,6 +1,6 @@
-package targets
+package dev.llelievr.espflashkotlin.targets
 
-import loadStubFromResource
+import dev.llelievr.espflashkotlin.loadStubFromResource
 
 class Esp32c3Target : ESP32Target() {
     override fun init() {

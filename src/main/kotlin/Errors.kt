@@ -1,3 +1,5 @@
+package dev.llelievr.espflashkotlin
+
 enum class FlashError(val value: Byte, val meaning: String) {
     INVALID_MESSAGE(0x05, "Received message is invalid (parameters or length field is invalid)"),
     FAILED_TO_ACT(0x06, "Failed to act on received message"),

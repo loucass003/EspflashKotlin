@@ -1,3 +1,5 @@
+package dev.llelievr.espflashkotlin
+
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import kotlin.experimental.and

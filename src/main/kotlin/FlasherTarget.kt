@@ -1,3 +1,4 @@
+package dev.llelievr.espflashkotlin
 
 interface FlasherTarget {
 

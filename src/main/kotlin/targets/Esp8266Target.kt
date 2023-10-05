@@ -1,9 +1,9 @@
-package targets
+package dev.llelievr.espflashkotlin.targets
 
-import Command
-import FlasherStub
-import FlasherTarget
-import loadStubFromResource
+import dev.llelievr.espflashkotlin.Command
+import dev.llelievr.espflashkotlin.FlasherStub
+import dev.llelievr.espflashkotlin.FlasherTarget
+import dev.llelievr.espflashkotlin.loadStubFromResource
 import kotlin.experimental.or
 
 class Esp8266Target : FlasherTarget {

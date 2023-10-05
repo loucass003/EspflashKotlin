@@ -1,6 +1,8 @@
-import targets.ESP32Target
-import targets.Esp32c3Target
-import targets.Esp8266Target
+package dev.llelievr.espflashkotlin
+
+import dev.llelievr.espflashkotlin.targets.ESP32Target
+import dev.llelievr.espflashkotlin.targets.Esp32c3Target
+import dev.llelievr.espflashkotlin.targets.Esp8266Target
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 import java.util.logging.*

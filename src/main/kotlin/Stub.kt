@@ -1,3 +1,5 @@
+package dev.llelievr.espflashkotlin
+
 import kotlinx.serialization.*
 import kotlinx.serialization.json.Json
 import java.io.File
