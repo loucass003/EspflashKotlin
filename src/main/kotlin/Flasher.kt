@@ -15,7 +15,7 @@ interface FlasherSerialInterface {
     /**
      * Called when the flasher open the serial port
      */
-    fun openSerial()
+    fun openSerial(port: Any)
 
     /**
      * Called when the flasher close the serial port
@@ -121,16 +121,17 @@ class Flasher(
 
     /**
      * Start the flashing process
+     * Specify the serial port to open
      * Blocking
      */
-    fun flash() {
+    fun flash(port: Any) {
         if (flashing)
             error("This flasher is already flashing")
         flashing = true;
 
         // TODO add checks if binaries are overlapping
 
-        serialInterface.openSerial();
+        serialInterface.openSerial(port);
 
         begin();
 

@@ -13,13 +13,16 @@ class LibraryTest: FlasherSerialInterface {
     private var port: SerialPort? = null
 
     fun flash() {
+        val ports = SerialPort.getCommPorts()
+        val firstPort = ports.first() ?: error("unable to find port")
+
         Flasher(this, false)
             .addBin(File("C:\\Users\\louca\\Documents\\SlimeVR\\SlimeVR-Tracker-ESP\\.pio\\build\\esp32c3\\bootloader.bin").readBytes(), 0x0000)
             .addBin(File("C:\\Users\\louca\\Documents\\SlimeVR\\SlimeVR-Tracker-ESP\\.pio\\build\\esp32c3\\partitions.bin").readBytes(), 0x8000)
             .addBin(File("C:\\Users\\louca\\.platformio\\packages\\framework-arduinoespressif32@3.20007.0\\tools\\partitions\\boot_app0.bin").readBytes(), 0xe000)
             .addBin(File("C:\\Users\\louca\\Documents\\SlimeVR\\SlimeVR-Tracker-ESP\\.pio\\build\\esp32c3\\firmware.bin").readBytes(), 0x10000)
 //            .addBin(downloadFirmware("http://127.0.0.1:9099/slimevr-firmware-builds/7e3c6081-0adb-4b12-9382-69c6174dcbd0/firmware-part-0.bin") ?: error("unable to download"), 0)
-            .flash()
+            .flash(firstPort)
     }
 
     fun downloadFirmware(url: String): ByteArray? {
@@ -39,12 +42,12 @@ class LibraryTest: FlasherSerialInterface {
         return outputStream.toByteArray()
     }
 
-    override fun openSerial() {
-        val ports = SerialPort.getCommPorts()
-        val firstPort = ports.first() ?: error("unable to find port")
-        if (!firstPort.openPort(1000))
+    override fun openSerial(port: Any) {
+        if (port !is SerialPort)
+            error("Not a serial port")
+        if (!port.openPort(1000))
             error("unable to open port")
-        port = firstPort
+        this.port = port
     }
 
 

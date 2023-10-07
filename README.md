@@ -22,6 +22,9 @@ class MyFlasher: FlasherSerialInterface {
     private var port: SerialPort? = null
 
     fun flash() {
+        val ports = SerialPort.getCommPorts()
+        val firstPort = ports.first() ?: error("unable to find port")
+        
         // Declare a flasher and its interface
         Flasher(this)
             // Add one or more binaries to flash
@@ -30,17 +33,16 @@ class MyFlasher: FlasherSerialInterface {
             .addBin(File("boot_app0.bin").readBytes(), 57344)
             .addBin(File("firmware.bin").readBytes(), 65536)
             // start the flashing
-            .flash()
+            .flash(firstPort)
     }
 
-    override fun openSerial() {
-        val ports = SerialPort.getCommPorts()
-        val firstPort = ports.first() ?: error("unable to find port")
-        if (!firstPort.openPort(1000))
+    override fun openSerial(port: Any) {
+        if (port !is SerialPort)
+            error("Not a serial port")
+        if (!port.openPort(1000))
             error("unable to open port")
-        port = firstPort
+        this.port = port
     }
-
 
     override fun closeSerial() {
         val p = port ?: error("no port to close")
