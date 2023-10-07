@@ -112,8 +112,8 @@ class LibraryTest: FlasherSerialInterface, FlashingProgressListener {
         p.flushIOBuffers()
     }
 
-    override fun progress(bin: Int, binTotal: Int, progress: Float) {
-        println("Progress File (${bin + 1} / ${binTotal}) ${progress * 100}")
+    override fun progress(progress: Float) {
+        println("Progress ${progress * 100}")
     }
 }
 

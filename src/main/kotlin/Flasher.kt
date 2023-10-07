@@ -73,7 +73,7 @@ interface FlasherSerialInterface {
 }
 
 interface FlashingProgressListener {
-    fun progress(bin: Int, binTotal: Int, progress: Float);
+    fun progress(progress: Float);
 }
 
 @OptIn(ExperimentalStdlibApi::class)
@@ -215,8 +215,7 @@ class Flasher(
         memBegin(stub.data.size, stub.data_start)
         val dataChunks = stub.data.asSequence().chunked(ESP_RAM_BLOCK)
         dataChunks.forEachIndexed { index, chunk ->
-            if (enableTrace)
-                println("Progress ${(index.toFloat() / dataChunks.count()) * 100}")
+            println("Progress ${(index.toFloat() / dataChunks.count()) * 100}")
             writeWait(
                 MemData(
                     chunk.size,
@@ -269,7 +268,7 @@ class Flasher(
 
         val chunks = bin.asSequence().chunked(writeSize)
         chunks.forEachIndexed { index, chunk ->
-            progressListeners.forEach { it.progress(index, chunks.count(), index.toFloat() / chunks.count()) }
+            progressListeners.forEach { it.progress((index * writeSize).toFloat() / bin.size) }
 
             var block = chunk.toByteArray();
 
