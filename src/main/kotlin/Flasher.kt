@@ -72,7 +72,7 @@ interface FlasherSerialInterface {
     fun flushIOBuffers();
 }
 
-interface ProgressListener {
+interface FlashingProgressListener {
     fun progress(bin: Int, binTotal: Int, progress: Float);
 }
 
@@ -88,7 +88,7 @@ class Flasher(
     private val targets = HashMap<Int, FlasherTarget>();
     private val binsToFlash = ArrayList<Pair<Int, ByteArray>>();
     private var flashing: Boolean = false;
-    private val progressListeners = ArrayList<ProgressListener>();
+    private val progressListeners = ArrayList<FlashingProgressListener>();
 
 
     init {
@@ -118,7 +118,7 @@ class Flasher(
      *
      * Used to watch flashing progress
      */
-    fun addProgressListener(listener: ProgressListener): Flasher {
+    fun addProgressListener(listener: FlashingProgressListener): Flasher {
         progressListeners.add(listener);
         return this;
     }

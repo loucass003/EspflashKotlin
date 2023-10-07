@@ -14,10 +14,11 @@ Here is a list of the known serial libraries that are supported:
 ```kotlin
 import dev.llelievr.espflashkotlin.Flasher
 import dev.llelievr.espflashkotlin.FlasherSerialInterface
+import dev.llelievr.espflashkotlin.FlashingProgressListener
 import com.fazecast.jSerialComm.SerialPort
 import java.io.File
 
-class MyFlasher: FlasherSerialInterface {
+class MyFlasher: FlasherSerialInterface, FlashingProgressListener {
 
     private var port: SerialPort? = null
 
@@ -27,6 +28,8 @@ class MyFlasher: FlasherSerialInterface {
         
         // Declare a flasher and its interface
         Flasher(this)
+            // Watch for the upload progress 
+            .addProgressListener(this)
             // Add one or more binaries to flash
             .addBin(File("bootloader.bin").readBytes(), 4096)
             .addBin(File("partitions.bin").readBytes(), 32768)
@@ -101,6 +104,10 @@ class MyFlasher: FlasherSerialInterface {
     override fun flushIOBuffers() {
         val p = port ?: error("no port to flush")
         p.flushIOBuffers()
+    }
+
+    override fun progress(bin: Int, binTotal: Int, progress: Float) {
+        println("Progress File (${bin + 1} / ${binTotal}) ${progress * 100}")
     }
 }
 ```

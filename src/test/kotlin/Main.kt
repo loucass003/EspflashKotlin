@@ -2,13 +2,14 @@
 import com.fazecast.jSerialComm.SerialPort
 import dev.llelievr.espflashkotlin.Flasher
 import dev.llelievr.espflashkotlin.FlasherSerialInterface
+import dev.llelievr.espflashkotlin.FlashingProgressListener
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.IOException
 import java.io.InputStream
 import java.net.URL
 
-class LibraryTest: FlasherSerialInterface {
+class LibraryTest: FlasherSerialInterface, FlashingProgressListener {
 
     private var port: SerialPort? = null
 
@@ -17,6 +18,7 @@ class LibraryTest: FlasherSerialInterface {
         val firstPort = ports.first() ?: error("unable to find port")
 
         Flasher(this, false)
+            .addProgressListener(this)
             .addBin(File("C:\\Users\\louca\\Documents\\SlimeVR\\SlimeVR-Tracker-ESP\\.pio\\build\\esp32c3\\bootloader.bin").readBytes(), 0x0000)
             .addBin(File("C:\\Users\\louca\\Documents\\SlimeVR\\SlimeVR-Tracker-ESP\\.pio\\build\\esp32c3\\partitions.bin").readBytes(), 0x8000)
             .addBin(File("C:\\Users\\louca\\.platformio\\packages\\framework-arduinoespressif32@3.20007.0\\tools\\partitions\\boot_app0.bin").readBytes(), 0xe000)
@@ -108,6 +110,10 @@ class LibraryTest: FlasherSerialInterface {
     override fun flushIOBuffers() {
         val p = port ?: error("no port to flush");
         p.flushIOBuffers()
+    }
+
+    override fun progress(bin: Int, binTotal: Int, progress: Float) {
+        println("Progress File (${bin + 1} / ${binTotal}) ${progress * 100}")
     }
 }
 
