@@ -72,6 +72,10 @@ interface FlasherSerialInterface {
     fun flushIOBuffers();
 }
 
+interface ProgressListener {
+    fun progress(bin: Int, binTotal: Int, progress: Float);
+}
+
 @OptIn(ExperimentalStdlibApi::class)
 class Flasher(
     private val serialInterface: FlasherSerialInterface,
@@ -84,6 +88,7 @@ class Flasher(
     private val targets = HashMap<Int, FlasherTarget>();
     private val binsToFlash = ArrayList<Pair<Int, ByteArray>>();
     private var flashing: Boolean = false;
+    private val progressListeners = ArrayList<ProgressListener>();
 
 
     init {
@@ -105,6 +110,16 @@ class Flasher(
             error("Cannot add a target while flashing")
 
         targets[magic] = target;
+        return this;
+    }
+
+    /**
+     * Add progress listeners
+     *
+     * Used to watch flashing progress
+     */
+    fun addProgressListener(listener: ProgressListener): Flasher {
+        progressListeners.add(listener);
         return this;
     }
 
@@ -200,7 +215,8 @@ class Flasher(
         memBegin(stub.data.size, stub.data_start)
         val dataChunks = stub.data.asSequence().chunked(ESP_RAM_BLOCK)
         dataChunks.forEachIndexed { index, chunk ->
-            println("Progress ${(index.toFloat() / dataChunks.count()) * 100}")
+            if (enableTrace)
+                println("Progress ${(index.toFloat() / dataChunks.count()) * 100}")
             writeWait(
                 MemData(
                     chunk.size,
@@ -253,7 +269,7 @@ class Flasher(
 
         val chunks = bin.asSequence().chunked(writeSize)
         chunks.forEachIndexed { index, chunk ->
-            println("Progress ${(index.toFloat() / chunks.count()) * 100}")
+            progressListeners.forEach { it.progress(index, chunks.count(), index.toFloat() / chunks.count()) }
 
             var block = chunk.toByteArray();
 
