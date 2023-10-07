@@ -147,21 +147,21 @@ class Flasher(
         // TODO add checks if binaries are overlapping
 
         serialInterface.openSerial(port);
+        try {
+            begin();
 
-        begin();
+            if (binsToFlash.isEmpty())
+                error("No binary added to the flasher")
 
-        if (binsToFlash.isEmpty())
-            error("No binary added to the flasher")
+            binsToFlash.sortedBy { it.first }.forEach { pair ->
+                writeBinToFlash(pair.second, pair.first);
+            }
 
-        binsToFlash.sortedBy { it.first }.forEach { pair ->
-            writeBinToFlash(pair.second, pair.first);
+            end();
+        } finally {
+            serialInterface.closeSerial();
+            flashing = false;
         }
-
-        end();
-
-        serialInterface.closeSerial();
-
-        flashing = false;
     }
 
     private fun flashBegin(size: Int, offset: Int) {
