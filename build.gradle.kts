@@ -22,9 +22,17 @@ dependencies {
     testImplementation("com.fazecast:jSerialComm:2.10.2")
 }
 
-tasks.named<Test>("test") {
-    useJUnitPlatform()
+gradle.taskGraph.whenReady {
+    tasks.named<Test>("test") {
+        onlyIf {
+            // Run tests only if the 'test' task is invoked directly
+            this@whenReady.hasTask(":test") && !this@whenReady.hasTask(":build") && !this@whenReady.hasTask(":assemble")
+        }
+        useJUnitPlatform()
+    }
 }
+
+
 
 tasks {
     compileKotlin {

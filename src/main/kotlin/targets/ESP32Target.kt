@@ -3,14 +3,16 @@ package dev.llelievr.espflashkotlin.targets
 import dev.llelievr.espflashkotlin.Command
 import dev.llelievr.espflashkotlin.FlasherStub
 import dev.llelievr.espflashkotlin.FlasherTarget
-import dev.llelievr.espflashkotlin.loadStubFromResource
+import dev.llelievr.espflashkotlin.StubLoader
 import kotlin.experimental.or
+
+
 
 open class ESP32Target : FlasherTarget {
     internal var stub: FlasherStub? = null;
 
     override fun init() {
-        stub = loadStubFromResource("/stubs/stub_flasher_32.json")
+        stub = StubLoader.loadStubFromResource("/stubs/stub_flasher_32.json")
     }
 
     override fun getEraseSize(offset: Int, size: Int): Int {

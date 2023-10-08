@@ -5,7 +5,10 @@ import dev.llelievr.espflashkotlin.targets.Esp32c3Target
 import dev.llelievr.espflashkotlin.targets.Esp8266Target
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
+import java.util.*
 import java.util.logging.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 import kotlin.math.floor
 import kotlin.math.max
 
@@ -153,6 +156,8 @@ class Flasher(
             if (binsToFlash.isEmpty())
                 error("No binary added to the flasher")
 
+            // TODO check files fit in flash
+
             binsToFlash.sortedBy { it.first }.forEach { pair ->
                 writeBinToFlash(pair.second, pair.first);
             }
@@ -258,17 +263,29 @@ class Flasher(
         return true;
     }
 
+    fun padTo(data: ByteArray, alignment: Int, padCharacter: Byte = 0xFF.toByte()): ByteArray {
+        var paddedData = data.copyOf()
+        val padMod = data.size % alignment
+        if (padMod != 0) {
+            val padding = ByteArray(alignment - padMod) { padCharacter }
+            paddedData += padding
+        }
+        return paddedData
+    }
+
     private fun writeBinToFlash(bin: ByteArray, offset: Int) {
         val flasherTarget = currentTarget ?: error("target not set")
         val writeSize = flasherTarget.getFlashWriteSize()
 
-        val binMd5 = bytesToMd5(bin);
 
-        flashBegin(bin.size, offset)
+        val image = padTo(bin, 4);
+        val binMd5 = bytesToMd5(image);
 
-        val chunks = bin.asSequence().chunked(writeSize)
+        flashBegin(image.size, offset)
+
+        val chunks = image.asSequence().chunked(writeSize)
         chunks.forEachIndexed { index, chunk ->
-            progressListeners.forEach { it.progress((index * writeSize).toFloat() / bin.size) }
+            progressListeners.forEach { it.progress((index * writeSize).toFloat() / image.size) }
 
             var block = chunk.toByteArray();
 
@@ -297,18 +314,18 @@ class Flasher(
 
         val command = FlashMD5(
             offset,
-            bin.size,
+            image.size,
         )
 
         if (command.isPacketSupported(flasherTarget)) {
             val res = writeWait(
                 command,
-                timeoutPerMb(bin.size, MD5_TIMEOUT_MILLIS_PER_MB)
+                timeoutPerMb(image.size, MD5_TIMEOUT_MILLIS_PER_MB)
             )
             val md5Data = res.optionalData() ?: error("could not read md5 from response");
             val md5Str = when (md5Data.size) {
+                32 -> md5Data.toString().lowercase(Locale.getDefault())
                 16 -> md5Data.toHexString()
-                8 -> TODO("Unimplemented, cant test it")
                 else -> error("Invalid md5 format")
             }
 

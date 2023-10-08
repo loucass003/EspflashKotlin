@@ -1,8 +1,8 @@
-
 import com.fazecast.jSerialComm.SerialPort
 import dev.llelievr.espflashkotlin.Flasher
 import dev.llelievr.espflashkotlin.FlasherSerialInterface
 import dev.llelievr.espflashkotlin.FlashingProgressListener
+import org.junit.jupiter.api.Test
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.IOException
@@ -13,17 +13,19 @@ class LibraryTest: FlasherSerialInterface, FlashingProgressListener {
 
     private var port: SerialPort? = null
 
+    @Test()
     fun flash() {
         val ports = SerialPort.getCommPorts()
         val firstPort = ports.first() ?: error("unable to find port")
 
-        Flasher(this, false)
+        Flasher(this, true)
             .addProgressListener(this)
-            .addBin(File("C:\\Users\\louca\\Documents\\SlimeVR\\SlimeVR-Tracker-ESP\\.pio\\build\\esp32c3\\bootloader.bin").readBytes(), 0x0000)
-            .addBin(File("C:\\Users\\louca\\Documents\\SlimeVR\\SlimeVR-Tracker-ESP\\.pio\\build\\esp32c3\\partitions.bin").readBytes(), 0x8000)
-            .addBin(File("C:\\Users\\louca\\.platformio\\packages\\framework-arduinoespressif32@3.20007.0\\tools\\partitions\\boot_app0.bin").readBytes(), 0xe000)
-            .addBin(File("C:\\Users\\louca\\Documents\\SlimeVR\\SlimeVR-Tracker-ESP\\.pio\\build\\esp32c3\\firmware.bin").readBytes(), 0x10000)
-//            .addBin(downloadFirmware("http://127.0.0.1:9099/slimevr-firmware-builds/7e3c6081-0adb-4b12-9382-69c6174dcbd0/firmware-part-0.bin") ?: error("unable to download"), 0)
+//            .addBin(File("C:\\Users\\louca\\Documents\\SlimeVR\\SlimeVR-Tracker-ESP\\.pio\\build\\esp32c3\\bootloader.bin").readBytes(), 0x0000)
+//            .addBin(File("C:\\Users\\louca\\Documents\\SlimeVR\\SlimeVR-Tracker-ESP\\.pio\\build\\esp32c3\\partitions.bin").readBytes(), 0x8000)
+//            .addBin(File("C:\\Users\\louca\\.platformio\\packages\\framework-arduinoespressif32@3.20007.0\\tools\\partitions\\boot_app0.bin").readBytes(), 0xe000)
+//            .addBin(File("C:\\Users\\louca\\Documents\\SlimeVR\\SlimeVR-Tracker-ESP\\.pio\\build\\esp32c3\\firmware.bin").readBytes(), 0x10000)
+//            .addBin(downloadFirmware("http://localhost:9099/slimevr-firmware-builds/f3f9aa01-0088-40d0-882f-3b865d94e4bb/firmware-part-0.bin") ?: error("unable to download"), 0)
+            .addBin(File("C:\\Users\\louca\\Downloads\\firmware-part-0 (2).bin").readBytes(), 0)
             .flash(firstPort)
     }
 
