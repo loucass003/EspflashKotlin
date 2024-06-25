@@ -20,12 +20,12 @@ class LibraryTest: FlasherSerialInterface, FlashingProgressListener {
 
         Flasher(this, true)
             .addProgressListener(this)
-//            .addBin(File("C:\\Users\\louca\\Documents\\SlimeVR\\SlimeVR-Tracker-ESP\\.pio\\build\\esp32c3\\bootloader.bin").readBytes(), 0x0000)
-//            .addBin(File("C:\\Users\\louca\\Documents\\SlimeVR\\SlimeVR-Tracker-ESP\\.pio\\build\\esp32c3\\partitions.bin").readBytes(), 0x8000)
-//            .addBin(File("C:\\Users\\louca\\.platformio\\packages\\framework-arduinoespressif32@3.20007.0\\tools\\partitions\\boot_app0.bin").readBytes(), 0xe000)
-//            .addBin(File("C:\\Users\\louca\\Documents\\SlimeVR\\SlimeVR-Tracker-ESP\\.pio\\build\\esp32c3\\firmware.bin").readBytes(), 0x10000)
-//            .addBin(downloadFirmware("http://localhost:9099/slimevr-firmware-builds/f3f9aa01-0088-40d0-882f-3b865d94e4bb/firmware-part-0.bin") ?: error("unable to download"), 0)
-            .addBin(File("C:\\Users\\louca\\Downloads\\firmware-part-0 (2).bin").readBytes(), 0)
+            // ESP32
+//            .addBin(File("C:\\Users\\llelievr\\Downloads\\firmware\\firmware-part-0.bin").readBytes(), 4096)
+//            .addBin(File("C:\\Users\\llelievr\\Downloads\\firmware\\firmware-part-1.bin").readBytes(), 32768)
+//            .addBin(File("C:\\Users\\llelievr\\Downloads\\firmware\\firmware-part-2.bin").readBytes(), 57344)
+//            .addBin(File("C:\\Users\\llelievr\\Downloads\\firmware\\firmware-part-3.bin").readBytes(), 65536)
+            .addBin(File("C:\\Users\\llelievr\\Downloads\\firmware (1)\\firmware-part-0.bin").readBytes(), 0)
             .flash(firstPort)
     }
 
