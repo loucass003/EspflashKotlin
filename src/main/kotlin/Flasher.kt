@@ -1,5 +1,7 @@
 package dev.llelievr.espflashkotlin
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import dev.llelievr.espflashkotlin.targets.ESP32Target
 import dev.llelievr.espflashkotlin.targets.Esp32c3Target
 import dev.llelievr.espflashkotlin.targets.Esp8266Target
@@ -7,8 +9,6 @@ import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 import java.util.*
 import java.util.logging.*
-import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
 import kotlin.math.floor
 import kotlin.math.max
 
@@ -82,9 +82,10 @@ interface FlashingProgressListener {
 @OptIn(ExperimentalStdlibApi::class)
 class Flasher(
     private val serialInterface: FlasherSerialInterface,
-    private val enableTrace: Boolean = false
 ) {
-    private val slipParser = SLIPParser(serialInterface, enableTrace);
+    private var logger: Logger? = LoggerFactory.getLogger(Flasher::class.java)
+
+    private val slipParser = SLIPParser(serialInterface);
 
     private var currentTarget: FlasherTarget? = null
     private var currentTimeout: Long? = null;
@@ -175,7 +176,7 @@ class Flasher(
         val blockCount = (size + writeSize - 1) / writeSize
         val eraseSize = flasherTarget.getEraseSize(offset, size)
 
-        println("Write bin, erase = $eraseSize  write = $size ")
+        logger?.debug("Write bin, erase = $eraseSize  write = $size ")
         writeWait(
             FlashBegin(
                 eraseSize,
@@ -191,7 +192,7 @@ class Flasher(
         val writeSize = ESP_RAM_BLOCK;
         val blockCount = (size + writeSize - 1) / writeSize
 
-        println("Write mem, write = $size ")
+        logger?.debug("Write mem, write = $size ")
         writeWait(
             MemBegin(
                 size,
@@ -207,7 +208,7 @@ class Flasher(
         memBegin(stub.text.size, stub.text_start)
         val textChunks = stub.text.asSequence().chunked(ESP_RAM_BLOCK)
         textChunks.forEachIndexed { index, chunk ->
-            println("Progress ${(index.toFloat() / textChunks.count()) * 100}")
+            logger?.debug("Progress ${(index.toFloat() / textChunks.count()) * 100}")
             writeWait(
                 MemData(
                     chunk.size,
@@ -220,7 +221,7 @@ class Flasher(
         memBegin(stub.data.size, stub.data_start)
         val dataChunks = stub.data.asSequence().chunked(ESP_RAM_BLOCK)
         dataChunks.forEachIndexed { index, chunk ->
-            println("Progress ${(index.toFloat() / dataChunks.count()) * 100}")
+            logger?.debug("Progress ${(index.toFloat() / dataChunks.count()) * 100}")
             writeWait(
                 MemData(
                     chunk.size,
@@ -235,14 +236,14 @@ class Flasher(
         )
 
 
-        println("Waiting for OHAI response");
+        logger?.debug("Waiting for OHAI response");
         setReadTimeout(DEFAULT_TIMEOUT);
         val reader = slipParser.getSlipReader() ?: error("no SLIP reader")
         val packetData = reader.next()
 
         if (!packetData.contentEquals(byteArrayOf(0x4F, 0x48, 0x41, 0x49)))
-            println("Failed to start stub, unexpected response: ${packetData.toHexString()}")
-        println("Stub running...")
+            logger?.debug("Failed to start stub, unexpected response: ${packetData.toHexString()}")
+        logger?.debug("Stub running...")
     }
 
     private fun changeBaud(baud: Int): Boolean {
@@ -250,7 +251,7 @@ class Flasher(
 
         val command = ChangeBaudrate(baud, if (flasherTarget.stub() != null) ESP_ROM_BAUD else 0);
         if (!command.isPacketSupported(flasherTarget)) {
-            println("Cannot change the baudrate, packet not supported on this target")
+            logger?.debug("Cannot change the baudrate, packet not supported on this target")
             return false;
         }
 
@@ -339,7 +340,7 @@ class Flasher(
 
         resetToFlash();
 
-        println("Trying to sync")
+        logger?.debug("Trying to sync")
         for (i in 10 downTo 0) {
             try {
                 slipParser.flushInput();
@@ -364,12 +365,12 @@ class Flasher(
         val stub = target.stub();
 
         if (stub != null) {
-            println("Uploading STUB")
+            logger?.debug("Uploading STUB")
             loadStub(stub);
 
             val newBaud = target.getUploadBaudrate();
             if (changeBaud(newBaud))
-                println("Baudrate changed to $newBaud")
+                logger?.debug("Baudrate changed to $newBaud")
         }
     }
 
@@ -423,18 +424,16 @@ class Flasher(
         val commandBuf = CommandPacket.createCommand(command)
         val encoded = slipParser.encodeSLIP(commandBuf)
 
-        if (enableTrace) {
-            println(
-                """
-                    ---------------------
-                    Command $command
-                    packetPayload=${encoded.toHexString()}
-                    size=${encoded.size}
-                    data=${commandBuf.toHexString()}
-                    ---------------------
-                """.trimIndent()
-            )
-        }
+        logger?.trace(
+            """
+                ---------------------
+                Command $command
+                packetPayload=${encoded.toHexString()}
+                size=${encoded.size}
+                data=${commandBuf.toHexString()}
+                ---------------------
+            """.trimIndent()
+        )
         serialInterface.write(encoded);
     }
 
@@ -456,9 +455,7 @@ class Flasher(
             res = ResponsePacket.decodeResponse(packetData);
 
             if (res.command == command.command) {
-                if (enableTrace) {
-                    println(res.toString())
-                }
+                logger?.trace(res.toString())
                 return res;
             }
         }

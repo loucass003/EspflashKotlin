@@ -1,13 +1,15 @@
 package dev.llelievr.espflashkotlin
 
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.io.ByteArrayOutputStream
 
 @OptIn(ExperimentalStdlibApi::class)
 class SLIPParser(
     val serialInterface: FlasherSerialInterface,
-    val enableTrace: Boolean,
 ) {
+    private var logger: Logger? = LoggerFactory.getLogger(SLIPParser::class.java)
     private var slipReader: Iterator<ByteArray>? = null;
 
     fun flushInput() {
@@ -28,9 +30,7 @@ class SLIPParser(
             val toRead = if (available == 0) 1 else available;
             val readBytes = serialInterface.read(toRead);
 
-            if (enableTrace) {
-                println("Read ${readBytes.size} bytes: ${readBytes.toHexString()}")
-            }
+            logger?.trace("Read ${readBytes.size} bytes: ${readBytes.toHexString()}")
             if (!packetStarted && readBytes[0] == 0.toByte()) {
                 error("No serial data received.")
             }
