@@ -21,11 +21,11 @@ class LibraryTest: FlasherSerialInterface, FlashingProgressListener {
         Flasher(this)
             .addProgressListener(this)
             // ESP32
-            .addBin(File("C:\\Users\\llelievr\\Downloads\\firmware\\firmware-part-0.bin").readBytes(), 4096)
-            .addBin(File("C:\\Users\\llelievr\\Downloads\\firmware\\firmware-part-1.bin").readBytes(), 32768)
-            .addBin(File("C:\\Users\\llelievr\\Downloads\\firmware\\firmware-part-2.bin").readBytes(), 57344)
-            .addBin(File("C:\\Users\\llelievr\\Downloads\\firmware\\firmware-part-3.bin").readBytes(), 65536)
-//            .addBin(File("C:\\Users\\llelievr\\Downloads\\firmware (1)\\firmware-part-0.bin").readBytes(), 0)
+//            .addBin(File("C:\\Users\\llelievr\\Downloads\\firmware\\firmware-part-0.bin").readBytes(), 4096)
+//            .addBin(File("C:\\Users\\llelievr\\Downloads\\firmware\\firmware-part-1.bin").readBytes(), 32768)
+//            .addBin(File("C:\\Users\\llelievr\\Downloads\\firmware\\firmware-part-2.bin").readBytes(), 57344)
+//            .addBin(File("C:\\Users\\llelievr\\Downloads\\firmware\\firmware-part-3.bin").readBytes(), 65536)
+            .addBin(File("C:\\Users\\llelievr\\Downloads\\firmware-part-0.bin").readBytes(), 0)
             .flash(firstPort)
     }
 

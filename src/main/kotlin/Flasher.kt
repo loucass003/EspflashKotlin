@@ -397,7 +397,7 @@ class Flasher(
         serialInterface.setDTR(true)
         serialInterface.setRTS(false)
         Thread.sleep(50)
-        serialInterface.setRTS(true)
+        serialInterface.setDTR(false)
     }
 
     private fun resetAfterFlash() {
