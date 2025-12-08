@@ -402,9 +402,10 @@ class Flasher(
 
     private fun resetAfterFlash() {
         Thread.sleep(100)
+        serialInterface.setDTR(false)
+        Thread.sleep(100)
         serialInterface.setRTS(true)
         Thread.sleep(100)
-        serialInterface.setRTS(false)
     }
 
     private fun setReadTimeout(timeout: Long) {
